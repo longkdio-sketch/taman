@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Tặng Tâm An 20/10</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* --- OVERLAY START (GIÚP TỰ ĐỘNG PHÁT NHẠC VÀ GIỌNG ĐỌC KHÔNG BỊ CHẶN) --- */
+        #start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        #start-overlay h1 {
+            font-size: 2rem;
+            color: #ff4d6d;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #ff4d6d;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        #start-overlay p {
+            font-size: 1.2rem;
+            color: #ddd;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        /* --- STAGE 1: STARFIELD & WELCOME HEART --- */
+        #stage1 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        #flying-heart-banner {
+            position: absolute;
+            top: 40%;
+            right: -800px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            white-space: nowrap;
+            animation: flyRightToLeft 8s linear forwards;
+        }
+
+        .heart-shape {
+            width: 50px;
+            height: 50px;
+            background: #ff4d6d;
+            position: relative;
+            transform: rotate(-45deg);
+            animation: pulse 1s infinite alternate;
+            box-shadow: 0 0 20px #ff4d6d;
+        }
+
+        .heart-shape::before, .heart-shape::after {
+            content: '';
+            width: 50px;
+            height: 50px;
+            background: #ff4d6d;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .heart-shape::before { top: -25px; left: 0; }
+        .heart-shape::after { left: 25px; top: 0; }
+
+        .banner-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes flyRightToLeft {
+            0% { right: -800px; }
+            100% { right: 110%; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        /* --- STAGE 2: MAIN BOARD & BACKGROUND --- */
+        #stage2 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #stage2.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #main-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #1a0933;
+            /* LINK FILE ẢNH NỀN TRONG THƯ MỤC THỰC TẾ */
+            background-image: url('1792500877580.png');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.8);
+        }
+
+        #floating-hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            color: #ff4d6d;
+            font-size: 20px;
+            animation: floatUp var(--speed) linear infinite;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 6px #ff758f);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.9; }
+            90% { opacity: 0.9; }
+            100% { transform: translateY(-105vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- STAGE 3: HELICOPTER & TYPING TEXT --- */
+        #typing-container {
+            position: absolute;
+            top: 15%;
+            width: 100%;
+            text-align: center;
+            z-index: 5;
+            padding: 0 20px;
+        }
+
+        #typing-text {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff0055;
+            min-height: 2.2em;
+            display: inline-block;
+            border-right: 3px solid #ff4d6d;
+            white-space: pre-wrap;
+        }
+
+        #helicopter-wrapper {
+            position: absolute;
+            top: 35%;
+            right: -500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 6;
+            transition: right 6s ease-out;
+        }
+
+        .helicopter {
+            font-size: 80px;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+            animation: heliBob 0.6s infinite alternate ease-in-out;
+        }
+
+        @keyframes heliBob {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-12px); }
+        }
+
+        .rope {
+            width: 3px;
+            height: 70px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0.3));
+        }
+
+        .gift-box {
+            font-size: 70px;
+            cursor: pointer;
+            animation: giftWobble 1.5s infinite ease-in-out;
+            filter: drop-shadow(0 0 15px #ff4d6d);
+            transition: transform 0.3s ease;
+        }
+
+        .gift-box:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        @keyframes giftWobble {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* --- STAGE 4: LETTER & POPUP --- */
+        #letter-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        #letter-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .letter-card {
+            background: linear-gradient(135deg, #ffffff, #fff0f5);
+            color: #333;
+            width: 90%;
+            max-width: 550px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.4);
+            text-align: center;
+            position: relative;
+            transform: scale(0.7);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid #ffb3c1;
+        }
+
+        #letter-modal.active .letter-card {
+            transform: scale(1);
+        }
+
+        .letter-card h2 {
+            color: #ff4d6d;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .letter-card p {
+            font-size: 1.25rem;
+            line-height: 1.7;
+            color: #4a4a4a;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .read-btn {
+            background: linear-gradient(45deg, #ff4d6d, #ff758f);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .read-btn:hover {
+            transform: translateY(-3deg) scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 77, 109, 0.6);
+        }
+
+        .heart-balloon {
+            position: absolute;
+            font-size: 40px;
+            pointer-events: none;
+            z-index: 15;
+            animation: balloonFly 3s ease-out forwards;
+        }
+
+        @keyframes balloonFly {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        #music-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 30;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BẢNG BẮT ĐẦU ĐỂ BẬT NHẠC VÀ ÂM THANH CHUẨN -->
+    <div id="start-overlay" onclick="startExperience()">
+        <h1>✨ Món Quà 20/10 Tặng Tâm An ✨</h1>
+        <p>👉 Chạm vào bất kỳ đâu để bắt đầu 👈</p>
+    </div>
+
+    <!-- LINK FILE NHẠC TRONG THƯ MỤC THỰC TẾ -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="snaptik.vn_7238581009602612486.mp3" type="audio/mp3">
+    </audio>
+
+    <button id="music-btn" onclick="toggleMusic()">🎵</button>
+
+    <!-- GIAI ĐOẠN 1: MÀN HÌNH SAO & TRÁI TIM BAY -->
+    <div id="stage1">
+        <div id="starfield"></div>
+        <div id="flying-heart-banner">
+            <div class="heart-shape"></div>
+            <div class="banner-text">Chào bạn Tâm An, Chúc Bạn Vui Vẻ Khi Xem Món Quà Này ❤️</div>
+        </div>
+    </div>
+
+    <!-- GIAI ĐOẠN 2 & 3: BẢNG CHÍNH, BONG BÓNG TRÁI TIM & TRỰC THĂNG -->
+    <div id="stage2">
+        <div id="main-background"></div>
+        <div id="floating-hearts-container"></div>
+
+        <div id="typing-container">
+            <span id="typing-text"></span>
+        </div>
+
+        <div id="helicopter-wrapper">
+            <div class="helicopter">🚁</div>
+            <div class="rope"></div>
+            <div class="gift-box" onclick="openGift()">🎁</div>
+        </div>
+    </div>
+
+    <!-- GIAI ĐOẠN 4: BỨC THƯ -->
+    <div id="letter-modal">
+        <div class="letter-card">
+            <h2>🎀 Lời Chúc 20/10 🎀</h2>
+            <p id="letter-content">
+                Chúc Bạn 20/10 thật nhiều niềm vui, sức khỏe, luôn xinh đẹp vui tươi và rạng rỡ nha.<br><br>
+                Chúc cậu học giỏi, làm tốt các bài kiểm tra và điểm lúc nào cũng cao nhaa(θ‿θ)
+            </p>
+            <button class="read-btn" onclick="startReadingLetter()">Đọc Bức Thư 💖</button>
+        </div>
+    </div>
+
+    <script>
+        const typingMessage = "Tui Hok biết tặng bạn cái gì nên tui làm cái này tặng bạn mong bạn vui";
+        const letterText = "Chúc Bạn hai mươi tháng mười thật nhiều niềm vui, sức khỏe, luôn xinh đẹp vui tươi và rạng rỡ nha. Chúc cậu học giỏi, làm tốt các bài kiểm tra và điểm lúc nào cũng cao nha.";
+
+        // --- BẦU TRỜI SAO ---
+        const starfield = document.getElementById('starfield');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (Math.random() * 3 + 1) + 's');
+            starfield.appendChild(star);
+        }
+
+        const audio = document.getElementById('bg-music');
+
+        function startExperience() {
+            document.getElementById('start-overlay').style.display = 'none';
+            audio.play().catch(e => console.log(e));
+
+            // Chuyển giai đoạn sau 8 giây
+            setTimeout(() => {
+                document.getElementById('stage1').style.transition = 'opacity 1.5s ease';
+                document.getElementById('stage1').style.opacity = '0';
+                
+                setTimeout(() => {
+                    document.getElementById('stage1').style.display = 'none';
+                    document.getElementById('stage2').classList.add('active');
+                    startFloatingHearts();
+                    startStage3();
+                }, 1500);
+            }, 8000);
+        }
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+
+        function startFloatingHearts() {
+            const container = document.getElementById('floating-hearts-container');
+            const heartIcons = ['❤️', '💖', '💗', '💕', '🌸', '✨'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.setProperty('--speed', (Math.random() * 5 + 5) + 's');
+                container.appendChild(heart);
+
+                setTimeout(() => heart.remove(), 10000);
+            }, 300);
+        }
+
+        function startStage3() {
+            let index = 0;
+            const typingElement = document.getElementById('typing-text');
+            
+            function typeNextChar() {
+                if (index < typingMessage.length) {
+                    typingElement.textContent += typingMessage.charAt(index);
+                    index++;
+                    setTimeout(typeNextChar, 100);
+                } else {
+                    setTimeout(() => {
+                        const heliWrapper = document.getElementById('helicopter-wrapper');
+                        heliWrapper.style.right = 'calc(50% - 40px)';
+                    }, 500);
+                }
+            }
+
+            typeNextChar();
+        }
+
+        function openGift() {
+            const giftBox = document.querySelector('.gift-box');
+            const rect = giftBox.getBoundingClientRect();
+            
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    const balloon = document.createElement('div');
+                    balloon.className = 'heart-balloon';
+                    balloon.innerText = ['🎈', '💖', '❤️', '💕'][Math.floor(Math.random() * 4)];
+                    balloon.style.left = (rect.left + Math.random() * 60 - 30) + 'px';
+                    balloon.style.top = rect.top + 'px';
+                    document.body.appendChild(balloon);
+
+                    setTimeout(() => balloon.remove(), 3000);
+                }, i * 80);
+            }
+
+            setTimeout(() => {
+                document.getElementById('letter-modal').classList.add('active');
+            }, 1200);
+        }
+
+        // GIỌNG ĐỌC TIẾNG VIỆT CHUẨN GOOGLE VOICE
+        function startReadingLetter() {
+            // Giảm âm lượng nhạc nền xuống khi bắt đầu đọc thư
+            audio.volume = 0.3;
+
+            const ttsUrl = "https://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(letterText) + "&tl=vi&client=tw-ob";
+            const speechAudio = new Audio(ttsUrl);
+            
+            speechAudio.play().then(() => {
+                speechAudio.onended = () => {
+                    audio.volume = 1.0; // Tăng âm lượng nhạc nền lên lại sau khi đọc xong
+                };
+            }).catch(() => {
+                // Dự phòng Web Speech API nếu offline
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(letterText);
+                    utterance.lang = 'vi-VN';
+                    utterance.rate = 0.9;
+                    utterance.onend = () => { audio.volume = 1.0; };
+                    window.speechSynthesis.speak(utterance);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
